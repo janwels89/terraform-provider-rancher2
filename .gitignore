@@ -24,3 +24,7 @@ GEMINI.md
 .vscode
 .nix-script.sh
 sync_fork_v15.sh
+.gocache
+*.zip
+tofu_*_SHA256SUMS
+tofu-releases.json
