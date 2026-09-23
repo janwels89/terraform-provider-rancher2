@@ -30,6 +30,7 @@ pr
 pre
 pre-release
 prerelease
+pve
 rancher
 rc
 readme

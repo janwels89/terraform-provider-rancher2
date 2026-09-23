@@ -13,10 +13,10 @@ var (
 
 func init() {
 	testCloudCredentialPveConf = map[string]interface{}{
-		"pveUrl":         "https://pve.example.com:8006",
-		"pveTokenId":     "root@pam!rancher",
-		"pveTokenSecret": "secret-uuid",
-		"pveInsecureTls": false,
+		"url":         "https://pve.example.com:8006",
+		"tokenId":     "root@pam!rancher",
+		"tokenSecret": "secret-uuid",
+		"insecureTls": false,
 	}
 	testCloudCredentialPveInterface = []interface{}{
 		map[string]interface{}{
@@ -40,7 +40,7 @@ func TestFlattenCloudCredentialPve(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		output := flattenCloudCredentialPve(tc.Input, tc.ExpectedOutput)
+		output := flattenCloudCredentialPve(tc.Input, []interface{}{})
 		assert.Equal(t, tc.ExpectedOutput, output, "Unexpected output from flattener.")
 	}
 }
