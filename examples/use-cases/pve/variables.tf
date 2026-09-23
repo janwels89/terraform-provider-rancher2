@@ -36,8 +36,15 @@ variable "pve_cloud_credential_name" {
 }
 
 # Proxmox VE — machine-level settings only; URL, credentials and resource pool come from the cloud credential
+# Node selection: pve_node pins to one host, pve_allowed_nodes restricts to a subset. Set at most one; leave both empty to consider every online node.
+variable "pve_node" {
+  description = "Single Proxmox VE node name to place VMs on (e.g. 'pve1'). Empty lets the driver pick. Mutually exclusive with pve_allowed_nodes."
+  type        = string
+  default     = ""
+}
+
 variable "pve_allowed_nodes" {
-  description = "Comma-separated Proxmox VE node names the driver may place VMs on (e.g. 'pve1,pve2'). Empty considers every online node. This is the host-selection knob for a multi-node cluster."
+  description = "Comma-separated Proxmox VE node names the driver may place VMs on (e.g. 'pve1,pve2'). Empty considers every online node. Mutually exclusive with pve_node."
   type        = string
   default     = ""
 }

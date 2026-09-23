@@ -29,6 +29,7 @@ locals {
   }
 
   pve = {
+    node          = var.pve_node
     allowed_nodes = var.pve_allowed_nodes
     net_device    = var.pve_net_device
     ssh_user      = var.pve_ssh_user
@@ -50,7 +51,9 @@ resource "rancher2_machine_config_v2" "server" {
   pve_config {
     pve_template_vmid = local.server.template_vmid
 
-    # Host selection: restrict server nodes to this subset of the cluster
+    # Host selection: pin to a single node (pve_node) or restrict to a subset
+    # (pve_allowed_nodes) — set at most one, both default to empty (any node)
+    pve_node          = local.pve.node
     pve_allowed_nodes = local.pve.allowed_nodes
 
     pve_net_device   = local.pve.net_device
@@ -69,7 +72,9 @@ resource "rancher2_machine_config_v2" "worker" {
   pve_config {
     pve_template_vmid = local.worker.template_vmid
 
-    # Host selection: restrict worker nodes to this subset of the cluster
+    # Host selection: pin to a single node (pve_node) or restrict to a subset
+    # (pve_allowed_nodes) — set at most one, both default to empty (any node)
+    pve_node          = local.pve.node
     pve_allowed_nodes = local.pve.allowed_nodes
 
     pve_net_device   = local.pve.net_device
