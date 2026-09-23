@@ -1,18 +1,18 @@
 # RKE2 Cluster on Proxmox VE
 
-This example provisions an RKE2 cluster in Rancher using Proxmox VE (PVE) as the infrastructure provider via the `docker-machine-driver-pve` node driver.
+This example provisions an RKE2 cluster in Rancher using Proxmox VE (PVE) as the infrastructure provider via the `pve` node driver.
 
 It assumes you already have:
 
 - A Rancher instance with the Proxmox VE node driver installed and active
-- A PVE cloud credential already created in Rancher (URL + API token stored there)
+- A PVE cloud credential already created in Rancher (URL, API token and resource pool all live there)
 - A Proxmox VE VM template accessible from Rancher (cloud-init capable)
 
 ## Prerequisites
 
 - OpenTofu >= 1.5.0 (or Terraform >= 1.5.0)
 - Rancher2 provider >= 5.0.0
-- PVE node driver: [Stellatarum/docker-machine-driver-pve](https://github.com/Stellatarum/docker-machine-driver-pve)
+- PVE node driver: [Lore09/pve-rancher-driver](https://github.com/Lore09/pve-rancher-driver)
 
 ## Variables
 
@@ -24,14 +24,13 @@ It assumes you already have:
 | `cluster_name` | Name for the new cluster in Rancher | yes |
 | `kubernetes_version` | RKE2 version (e.g. `v1.34.3+rke2r1`) | yes |
 | `pve_cloud_credential_name` | Name of the existing PVE cloud credential in Rancher | yes |
-| `pve_resource_pool` | Proxmox VE resource pool name | yes |
-| `pve_network_interface` | Network interface bus/device (e.g. `net0`) | no (default: `net0`) |
-| `pve_iso_device` | CD/DVD drive bus/device for cloud-init ISO (e.g. `ide2`) | no (default: `scsi1`) |
-| `pve_ssh_user` | SSH user created by cloud-init | no (default: `service`) |
-| `pve_full_clone` | Force full disk clone instead of linked clone | no (default: `false`) |
+| `pve_allowed_nodes` | Comma-separated Proxmox VE node names the driver may place VMs on (host selection), e.g. `pve1,pve2` | no (default: empty = any online node) |
+| `pve_net_device` | Network config device whose MAC pins down IP discovery (e.g. `net0`) | no (default: `net0`) |
+| `pve_ssh_user` | Account the driver and Rancher log in as; must exist in the template image | yes |
+| `pve_linked_clone` | Clone as a linked clone instead of a full clone | no (default: `false`) |
 | `pve_tags` | Comma-separated VM tags | no |
-| `pve_server_template_id` | Proxmox VM template ID for server nodes | yes |
-| `pve_worker_template_id` | Proxmox VM template ID for worker nodes | yes |
+| `pve_server_template_vmid` | Proxmox VM template VMID for server nodes | yes |
+| `pve_worker_template_vmid` | Proxmox VM template VMID for worker nodes | yes |
 | `server_quantity` | Number of server (control-plane + etcd) nodes | no (default: `1`) |
 | `worker_quantity` | Number of worker nodes | no (default: `1`) |
 
@@ -43,13 +42,12 @@ rancher_insecure          = false
 cluster_name              = "pve-cluster"
 kubernetes_version        = "v1.34.3+rke2r1"
 pve_cloud_credential_name = "my-pve-credential"
-pve_resource_pool         = "my-pool"
-pve_network_interface     = "net0"
-pve_iso_device            = "ide2"
-pve_ssh_user              = "service"
-pve_full_clone            = false
-pve_server_template_id    = "100"
-pve_worker_template_id    = "100"
+pve_allowed_nodes         = "pve1,pve2"
+pve_net_device            = "net0"
+pve_ssh_user              = "debian"
+pve_linked_clone          = false
+pve_server_template_vmid  = "100"
+pve_worker_template_vmid  = "100"
 server_quantity           = 3
 worker_quantity           = 2
 ```

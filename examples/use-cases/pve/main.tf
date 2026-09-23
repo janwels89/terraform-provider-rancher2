@@ -13,33 +13,33 @@ locals {
   pve_cloud_credential_name = var.pve_cloud_credential_name
 
   server = {
-    template_id = var.pve_server_template_id
-    sockets     = var.pve_server_sockets
-    cores       = var.pve_server_cores
-    memory      = var.pve_server_memory
-    quantity    = var.server_quantity
+    template_vmid = var.pve_server_template_vmid
+    sockets       = var.pve_server_sockets
+    cores         = var.pve_server_cores
+    memory        = var.pve_server_memory
+    quantity      = var.server_quantity
   }
 
   worker = {
-    template_id = var.pve_worker_template_id
-    sockets     = var.pve_worker_sockets
-    cores       = var.pve_worker_cores
-    memory      = var.pve_worker_memory
-    quantity    = var.worker_quantity
+    template_vmid = var.pve_worker_template_vmid
+    sockets       = var.pve_worker_sockets
+    cores         = var.pve_worker_cores
+    memory        = var.pve_worker_memory
+    quantity      = var.worker_quantity
   }
 
   pve = {
-    resource_pool     = var.pve_resource_pool
-    network_interface = var.pve_network_interface
-    iso_device        = var.pve_iso_device
-    ssh_user          = var.pve_ssh_user
-    full_clone        = var.pve_full_clone
-    tags              = var.pve_tags
+    allowed_nodes = var.pve_allowed_nodes
+    net_device    = var.pve_net_device
+    ssh_user      = var.pve_ssh_user
+    linked_clone  = var.pve_linked_clone
+    tags          = var.pve_tags
   }
 
 }
 
 # Look up existing cloud credential already configured in Rancher
+# (URL, API token and resource pool all live on this credential)
 data "rancher2_cloud_credential" "pve" {
   name = local.pve_cloud_credential_name
 }
@@ -48,17 +48,18 @@ resource "rancher2_machine_config_v2" "server" {
   generate_name = "${local.cluster_name}-server"
 
   pve_config {
-    pve_template_id = local.server.template_id
+    pve_template_vmid = local.server.template_vmid
 
-    pve_resource_pool     = local.pve.resource_pool
-    pve_network_interface = local.pve.network_interface
-    pve_iso_device        = local.pve.iso_device
-    pve_ssh_user          = local.pve.ssh_user
-    pve_processor_sockets = local.server.sockets
-    pve_processor_cores   = local.server.cores
-    pve_memory            = local.server.memory
-    pve_full_clone        = local.pve.full_clone
-    pve_tags              = local.pve.tags
+    # Host selection: restrict server nodes to this subset of the cluster
+    pve_allowed_nodes = local.pve.allowed_nodes
+
+    pve_net_device   = local.pve.net_device
+    pve_ssh_user     = local.pve.ssh_user
+    pve_sockets      = local.server.sockets
+    pve_cores        = local.server.cores
+    pve_memory       = local.server.memory
+    pve_linked_clone = local.pve.linked_clone
+    pve_tags         = local.pve.tags
   }
 }
 
@@ -66,17 +67,18 @@ resource "rancher2_machine_config_v2" "worker" {
   generate_name = "${local.cluster_name}-worker"
 
   pve_config {
-    pve_template_id = local.worker.template_id
+    pve_template_vmid = local.worker.template_vmid
 
-    pve_resource_pool     = local.pve.resource_pool
-    pve_network_interface = local.pve.network_interface
-    pve_iso_device        = local.pve.iso_device
-    pve_ssh_user          = local.pve.ssh_user
-    pve_processor_sockets = local.worker.sockets
-    pve_processor_cores   = local.worker.cores
-    pve_memory            = local.worker.memory
-    pve_full_clone        = local.pve.full_clone
-    pve_tags              = local.pve.tags
+    # Host selection: restrict worker nodes to this subset of the cluster
+    pve_allowed_nodes = local.pve.allowed_nodes
+
+    pve_net_device   = local.pve.net_device
+    pve_ssh_user     = local.pve.ssh_user
+    pve_sockets      = local.worker.sockets
+    pve_cores        = local.worker.cores
+    pve_memory       = local.worker.memory
+    pve_linked_clone = local.pve.linked_clone
+    pve_tags         = local.pve.tags
   }
 }
 

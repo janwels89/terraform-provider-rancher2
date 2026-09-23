@@ -31,36 +31,30 @@ variable "rancher_insecure" {
 
 # Cloud credential name (must already exist in Rancher)
 variable "pve_cloud_credential_name" {
-  description = "Name of the Proxmox VE cloud credential already configured in Rancher."
+  description = "Name of the Proxmox VE cloud credential already configured in Rancher. The resource pool, URL and API token all live on this credential (see rancher2_cloud_credential.pve_credential_config)."
   type        = string
 }
 
-# Proxmox VE — machine-level settings only; URL and credentials come from the cloud credential
-variable "pve_resource_pool" {
-  description = "Proxmox VE Resource Pool name."
+# Proxmox VE — machine-level settings only; URL, credentials and resource pool come from the cloud credential
+variable "pve_allowed_nodes" {
+  description = "Comma-separated Proxmox VE node names the driver may place VMs on (e.g. 'pve1,pve2'). Empty considers every online node. This is the host-selection knob for a multi-node cluster."
   type        = string
+  default     = ""
 }
 
-variable "pve_network_interface" {
-  description = "Bus/device of the network interface to read the machine IP from (e.g. net0)."
+variable "pve_net_device" {
+  description = "Proxmox VE network config device whose MAC pins down IP discovery (e.g. net0)."
   type        = string
   default     = "net0"
 }
 
-variable "pve_iso_device" {
-  description = "Bus/device of the CD/DVD drive to mount the cloud-init ISO to (e.g. scsi1)."
-  type        = string
-  default     = "scsi1"
-}
-
 variable "pve_ssh_user" {
-  description = "SSH user created via cloud-init."
+  description = "Account the driver and Rancher log in as. Must exist in the guest image (e.g. debian, rancher)."
   type        = string
-  default     = "service"
 }
 
-variable "pve_full_clone" {
-  description = "Forces a full copy of all disks, even if the storage supports linked clones."
+variable "pve_linked_clone" {
+  description = "Clones the template as a linked clone instead of a full, independent copy. Requires snapshot-capable storage."
   type        = bool
   default     = false
 }
@@ -72,8 +66,8 @@ variable "pve_tags" {
 }
 
 # Server (control-plane + etcd) pool
-variable "pve_server_template_id" {
-  description = "ID of the Proxmox VE VM template to use for server nodes."
+variable "pve_server_template_vmid" {
+  description = "VMID of the Proxmox VE VM template to use for server nodes."
   type        = string
 }
 
@@ -102,8 +96,8 @@ variable "server_quantity" {
 }
 
 # Worker pool
-variable "pve_worker_template_id" {
-  description = "ID of the Proxmox VE VM template to use for worker nodes."
+variable "pve_worker_template_vmid" {
+  description = "VMID of the Proxmox VE VM template to use for worker nodes."
   type        = string
 }
 

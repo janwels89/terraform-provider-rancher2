@@ -129,12 +129,17 @@ The following attributes are exported:
 
 ### `pve_credential_config`
 
+Config for the [`Lore09/pve-rancher-driver`](https://github.com/Lore09/pve-rancher-driver) node driver.
+
 #### Arguments
 
-* `pve_url` - (Required) Proxmox VE URL (e.g. `https://<PROXMOX VE ADDRESS>:8006`) (string)
+* `pve_url` - (Required) Proxmox VE URL (e.g. `https://<PROXMOX VE ADDRESS>:8006/api2/json`) (string)
 * `pve_token_id` - (Required) Proxmox VE API Token ID (including username and realm, e.g. `root@pam!rancher`) (string)
 * `pve_token_secret` - (Required/Sensitive) Proxmox VE API Token secret (string)
-* `pve_insecure_tls` - (Optional) Disables Proxmox VE TLS certificate verification. Default `false` (bool)
+* `pve_insecure_tls` - (Optional) Disables Proxmox VE TLS certificate verification. Applies to the driver only. Default `false` (bool)
+* `pve_ca_cert` - (Optional/Sensitive) PEM CA certificate content (not a path) to trust for the Proxmox VE API (string)
+* `pve_pool` - (Optional) Proxmox VE resource pool new VMs are created into. Must match the API token's ACL scope (string)
+* `pve_skip_permission_check` - (Optional) Skips the token-privilege probe run before provisioning. Default `false` (bool)
 
 ### `s3_credential_config`
 
