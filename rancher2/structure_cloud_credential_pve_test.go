@@ -13,17 +13,23 @@ var (
 
 func init() {
 	testCloudCredentialPveConf = map[string]interface{}{
-		"url":         "https://pve.example.com:8006",
-		"tokenId":     "root@pam!rancher",
-		"tokenSecret": "secret-uuid",
-		"insecureTls": false,
+		"url":                 "https://pve.example.com:8006",
+		"tokenId":             "root@pam!rancher",
+		"tokenSecret":         "secret-uuid",
+		"insecureTls":         false,
+		"caCert":              "-----BEGIN CERTIFICATE-----\nMII...\n-----END CERTIFICATE-----",
+		"pool":                "rancher-managed",
+		"skipPermissionCheck": false,
 	}
 	testCloudCredentialPveInterface = []interface{}{
 		map[string]interface{}{
-			"pve_url":          "https://pve.example.com:8006",
-			"pve_token_id":     "root@pam!rancher",
-			"pve_token_secret": "secret-uuid",
-			"pve_insecure_tls": false,
+			"pve_url":                   "https://pve.example.com:8006",
+			"pve_token_id":              "root@pam!rancher",
+			"pve_token_secret":          "secret-uuid",
+			"pve_insecure_tls":          false,
+			"pve_ca_cert":               "-----BEGIN CERTIFICATE-----\nMII...\n-----END CERTIFICATE-----",
+			"pve_pool":                  "rancher-managed",
+			"pve_skip_permission_check": false,
 		},
 	}
 }

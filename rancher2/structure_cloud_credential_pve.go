@@ -26,6 +26,15 @@ func flattenCloudCredentialPve(in map[string]interface{}, p []interface{}) []int
 	if v, ok := in["insecureTls"].(bool); ok {
 		obj["pve_insecure_tls"] = v
 	}
+	if v, ok := in["caCert"].(string); ok && len(v) > 0 {
+		obj["pve_ca_cert"] = v
+	}
+	if v, ok := in["pool"].(string); ok && len(v) > 0 {
+		obj["pve_pool"] = v
+	}
+	if v, ok := in["skipPermissionCheck"].(bool); ok {
+		obj["pve_skip_permission_check"] = v
+	}
 
 	return []interface{}{obj}
 }
@@ -50,6 +59,15 @@ func expandCloudCredentialPve(p []interface{}) map[string]interface{} {
 	}
 	if v, ok := in["pve_insecure_tls"].(bool); ok {
 		obj["insecureTls"] = v
+	}
+	if v, ok := in["pve_ca_cert"].(string); ok && len(v) > 0 {
+		obj["caCert"] = v
+	}
+	if v, ok := in["pve_pool"].(string); ok && len(v) > 0 {
+		obj["pool"] = v
+	}
+	if v, ok := in["pve_skip_permission_check"].(bool); ok {
+		obj["skipPermissionCheck"] = v
 	}
 
 	return obj

@@ -26,5 +26,22 @@ func cloudCredentialPveFields() map[string]*schema.Schema {
 			Default:     false,
 			Description: "Disables Proxmox VE TLS certificate verification",
 		},
+		"pve_ca_cert": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Sensitive:   true,
+			Description: "PEM CA certificate content (not a path) to trust for the Proxmox VE API",
+		},
+		"pve_pool": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Description: "Proxmox VE resource pool new VMs are created into. Must match the API token's ACL scope",
+		},
+		"pve_skip_permission_check": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Default:     false,
+			Description: "Skips the token-privilege probe run before provisioning",
+		},
 	}
 }
