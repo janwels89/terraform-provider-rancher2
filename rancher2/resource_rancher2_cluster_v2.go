@@ -36,7 +36,12 @@ func resourceRancher2ClusterV2() *schema.Resource {
 				oldObj, newObj := d.GetChange("rke_config")
 				oldInterface, oldOk := oldObj.([]interface{})
 				newInterface, newOk := newObj.([]interface{})
-				if oldOk && newOk && len(newInterface) > 0 {
+				// Skip the normalization below if a machine_config attribute is still
+				// unknown (e.g. interpolated from a rancher2_machine_config_v2 that is
+				// being created in the same apply): re-flattening the expanded config
+				// would bake in its zero value and make the provider produce an
+				// inconsistent final plan once the real value is known.
+				if oldOk && newOk && len(newInterface) > 0 && clusterV2RKEConfigMachinePoolsMachineConfigKnown(d, newInterface) {
 					oldConfig := expandClusterV2RKEConfig(oldInterface)
 					newConfig := expandClusterV2RKEConfig(newInterface)
 					if reflect.DeepEqual(oldConfig, newConfig) {
@@ -101,6 +106,30 @@ func resourceRancher2ClusterV2StateUpgradeV0(rawState map[string]any, meta inter
 		}
 	}
 	return rawState, nil
+}
+
+// clusterV2RKEConfigMachinePoolsMachineConfigKnown reports whether every
+// machine_config leaf value (kind/name/api_version) under rke_config.0.machine_pools
+// is already known. rke_config and machine_config are both MaxItems: 1, so their
+// index in the address is always 0.
+func clusterV2RKEConfigMachinePoolsMachineConfigKnown(d *schema.ResourceDiff, newRKEConfig []interface{}) bool {
+	rkeConfig, ok := newRKEConfig[0].(map[string]interface{})
+	if !ok {
+		return true
+	}
+	machinePools, ok := rkeConfig["machine_pools"].([]interface{})
+	if !ok {
+		return true
+	}
+	for i := range machinePools {
+		for _, field := range []string{"kind", "name", "api_version"} {
+			key := fmt.Sprintf("rke_config.0.machine_pools.%d.machine_config.0.%s", i, field)
+			if !d.NewValueKnown(key) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func resourceRancher2ClusterV2Create(d *schema.ResourceData, meta interface{}) error {
